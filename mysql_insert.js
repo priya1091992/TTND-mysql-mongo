@@ -11,13 +11,15 @@ var conn=mysql.createConnection({
   database:'shoppingCart'
 });
 
-var queryString= "select * from User";
+var queryString= "select UserID from User where UserID=1028";
 conn.query(queryString, function(error,results){
   if(error){
     throw error;
   }
   else{
-    //console.log(results);
+    //var ret = JSON.parse(JSON.stringify(results));
+    //console.log(ret[0].UserID);
+    // console.log(results.RowDataPacket);
   }
 });
 
@@ -56,7 +58,6 @@ function parallelFunction(callback){
           a[4]='alpha'+i+'@gmail.com';
           a[5]='alpha'+i+'@gmail.com';
           values.push(a);
-          //console.log("User:",values);
           LastValue=a[0];
         }
 
@@ -81,7 +82,6 @@ function parallelFunction(callback){
           a[1]="Product"+i;
           a[2]="Category"+i;
           values.push(a);
-         // console.log("Product:",values);
           LastProduct=a[0];
         }
 
@@ -115,12 +115,9 @@ function insertOrderItem(lastuser, lastproduct, callback){
     var a=[];
     var user;
     user=Math.floor((Math.random() * lastuser) + 1);
-    //console.log(user);
-
     a[0]=(54+i);
     a[1]=user;
     values.push(a);
-    //console.log("Order:",values);
     LastOrder=a[0];
   }
 
@@ -149,9 +146,7 @@ function insertLineItem(lastproduct,lastorder,callback){
     a[1]=lastProduct;
     a[2]=Math.floor((Math.random() * 10) + 1);;
     values.push(a);
-   // console.log("LineItem:",values);
   }
-
   conn.query(sql,[values], function(err){
     if(err) throw err;
   })
