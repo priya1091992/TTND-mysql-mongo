@@ -3,7 +3,6 @@
  */
 var mysql=require('mysql');
 var async=require('async');
-
 var conn=mysql.createConnection({
   host:'localhost',
   user:'root',
@@ -11,7 +10,7 @@ var conn=mysql.createConnection({
   database:'shoppingCart'
 });
 
-var queryString= "select UserID from User where UserID=1028";
+var queryString= "select UserID from Users where UserID=1028";
 conn.query(queryString, function(error,results){
   if(error){
     throw error;
@@ -19,7 +18,6 @@ conn.query(queryString, function(error,results){
   else{
     //var ret = JSON.parse(JSON.stringify(results));
     //console.log(ret[0].UserID);
-    // console.log(results.RowDataPacket);
   }
 });
 
@@ -48,10 +46,10 @@ function parallelFunction(callback){
   async.parallel([
       function(callback1){
         //insert values for User database
-        sql="insert into User(UserID,UserName,Address,Phone,Email,AlternateEmail) values ?";
+        sql="insert into Users(UserID,UserName,Address,Phone,Email,AlternateEmail) values ?";
         for(i=0;i<1000;i++){
           var a=[];
-          a[0]=(29+i);
+          a[0]=(1+i);
           a[1]="alpha"+i;
           a[2]=i+"-block";
           a[3]=9976573301+i;
@@ -74,11 +72,11 @@ function parallelFunction(callback){
       },
       function(callback1){
         //insert data for Product database
-        sql="insert into Product(ProductID,Description,Handling) values ?";
+        sql="insert into Products(ProductID,Description,Handling) values ?";
         values=[];
         for(i=0;i<1000;i++){
           var a=[];
-          a[0]=(35+i);
+          a[0]=(1+i);
           a[1]="Product"+i;
           a[2]="Category"+i;
           values.push(a);
@@ -109,13 +107,13 @@ function parallelFunction(callback){
 
 function insertOrderItem(lastuser, lastproduct, callback){
   //insert data for OrderItem database
-  sql="insert into OrderItem(OrderId,UserID) values ?";
+  sql="insert into OrderItems(OrderId,UserID) values ?";
   values=[];
   for(i=0;i<1000;i++){
     var a=[];
     var user;
     user=Math.floor((Math.random() * lastuser) + 1);
-    a[0]=(54+i);
+    a[0]=(1+i);
     a[1]=user;
     values.push(a);
     LastOrder=a[0];
@@ -134,7 +132,7 @@ function insertOrderItem(lastuser, lastproduct, callback){
 
 function insertLineItem(lastproduct,lastorder,callback){
 //Insert data for LineItem database
-  sql="insert into LineItem(OrderID,ProductId,Quantity) values ?";
+  sql="insert into LineItems(OrderID,ProductId,Quantity) values ?";
   values=[];
   for(i=0;i<1000;i++){
     var a=[];
