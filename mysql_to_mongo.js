@@ -3,76 +3,175 @@
  */
 var mysql=require('mysql');
 var async=require('async');
-var mongoose = require('mongoose');
-
-mongoose.connect('mongodb://127.0.0.1:27017/shopping');
-var connection = mongoose.connection;
-
-connection.on('error', function () {
-  console.log('###### Error ####');
-});
-connection.on('connected', function () {
-  console.log('###### Connected ####');
-});
-
-var Schema = mongoose.Schema;
-
-var user = new Schema({
-  UserId:{type:Number, required:true},
-  Name:{ type: String, required: true},
-  Address:{
-    building:{type:String}
-  },
-  PhoneNumber: {type: Number},
-  email:[{type: String, required: true}]
-});
-
-var userModel = mongoose.model('user', user);
-
+var userModel=require('./mongoose_collection').userModel;
+var product=require('./mongoose_collection').product;
+var orderItem=require('./mongoose_collection').orderItem;
 var conn=mysql.createConnection({
   host:'localhost',
   user:'root',
   password:'priya',
-  database:'shoppingCart'
+  database:'ShoppingCart'
 });
 
 var a;
+var userArray=[];
+var ret;
+var j=1;
+var obj1;
+var arr=[];
 
-var queryString= "select * from User where UserID=1028";
-conn.query(queryString, function(error,results){
-  if(error){
-    throw error;
+async.series([
+  parallelFunction,
+  insertOrderItem
+], function(err,results){
+  if(err){
+    console.log(err);
   }
   else{
-    var ret = JSON.parse(JSON.stringify(results));
-    console.log(ret[0]);
-    a=ret[0];
-    console.log(a);
-
-    var obj={
-      'UserId': a.UserID ,
-      'Name': a.UserName,
-      'Address':{'building':a.Address} ,
-      'PhoneNumber': a.Phone,
-      'email': [a.Email, a.AlternateEmail]
-    }
-
-console.log("Obj",obj);
-    var user = new userModel(obj);
-
-//save model to MongoDB
-    user.save(function (err) {
-      if (err) {
-        return err;
-      }
-      else {
-        console.log("Post saved");
-      }
-    });
-
+    console.log("yepee finish!!!!!!!");
   }
+  conn.end();
 });
 
-//
+function parallelFunction(callback){
+  async.parallel([
+    function(callback1){
+      var queryString = "select * from Users";
+      conn.query(queryString, function (error, results) {
+        if (error) {
+          throw error;
+        }
+        else {
+          if (results.length) {
+            ret = JSON.parse(JSON.stringify(results));
 
-conn.end();
+            var length = results.length;
+            for (i = 0; i < 2; i++) {
+              var obj = {};
+              a = ret[i];
+              obj = {
+                'UserId': a.UserID,
+                'Name': a.UserName,
+                'Address': {'building': a.Address},
+                'PhoneNumber': a.Phone,
+                'email': [a.Email, a.AlternateEmail]
+              }
+              userArray.push(obj);
+            }
+          }
+          for (i = 0; i < 2; i++) {
+            console.log("Obj", userArray[i]);
+            var user = new userModel(userArray[i]);
+            user.save(function (err) {
+              if (err) {
+                console.log(err);
+              }
+              else {
+                console.log("Post saved");
+              }
+            });
+          }
+        };
+      });
+      callback1(null,1);
+    },
+    function(callback1){
+      var queryString = "select * from Products";
+      userArray=[];
+      conn.query(queryString, function (error, results) {
+        if (error) {
+          throw error;
+        }
+        else {
+          userArray=[];
+          if (results.length) {
+            ret = JSON.parse(JSON.stringify(results));
+            var length = results.length;
+            for (i = 0; i < 2; i++) {
+              var obj = {};
+              a = ret[i];
+              obj = {
+                'ProductID': a.ProductID,
+                'Description': a.Description,
+                'Handling': a.Handling
+              }
+              userArray.push(obj);
+            }
+          }
+          for (i = 0; i < 2; i++) {
+            console.log("Obj", userArray[i]);
+            var product1 = new product(userArray[i]);
+            product1.save(function (err) {
+              if (err) {
+                console.log(err);
+              }
+              else {
+                console.log("Post saved");
+              }
+            });
+          }
+        };
+      });
+      callback1(null,1);
+    }
+  ],function(err,result){
+    if(err){
+      console.log(err);
+    }
+    else{
+      console.log("Completed");
+    }
+  });
+  callback(null,1);
+}
+
+
+function insertOrderItem(callback){
+var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID and OrderItems.OrderId=1000 order by OrderItems.OrderId'
+conn.query(que,function(err,results){
+  if(err){console.log(err);}
+  else {
+    userArray = [];
+    if (results.length) {
+      var ret = JSON.parse(JSON.stringify(results));
+      var length = results.length;
+      for (i=0; i<length; i=i+j) {
+        j=i;
+        a = ret[i];
+        while(j<length){
+          if(ret[j].OrderId==ret[i].OrderId){
+            obj1={};
+            a=ret[j];
+            obj1={
+              'Productid': a.ProductId,
+              'quantity': a.Quantity
+            }
+            arr.push(obj1);
+            j++;
+          }}
+        var obj = {};
+        a=ret[i];
+        obj = {
+          'OrderID': a.OrderID,
+          'OrderDetails':arr,
+          'UserID': a.UserID
+        }
+        userArray.push(obj);
+      }
+    }
+    for (i = 0; i < userArray.length; i++) {
+      var order = new orderItem(userArray[i]);
+      order.save(function (err) {
+        if (err) {
+          console.log(err);
+        }
+        else {
+          console.log("Post saved");
+        }
+      });
+    }
+  };
+})
+  callback(null,1);
+}
+
