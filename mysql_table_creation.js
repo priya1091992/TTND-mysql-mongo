@@ -2,7 +2,7 @@
  * Created by priya on 9/4/16.
  */
 var Sequelize=require('sequelize');
-var sequelize=new Sequelize('shoppingCart', 'root', 'priya',{
+var sequelize=new Sequelize('ShoppingCart', 'root', 'priya',{
   define: {
     timestamps: false
   }
@@ -49,7 +49,6 @@ sequelize.sync().then(function(success) {
 
 var ordernew=sequelize.define('OrderItem',{
     OrderId:{type:Sequelize.INTEGER, primaryKey:true}
-    //UserID:{type:Sequelize.INTEGER}
   },
   {
     timestamps: false
@@ -65,8 +64,6 @@ sequelize.sync().then(function(success) {
 });
 
 var linenew=sequelize.define('LineItem',{
-    OrderID:{type:Sequelize.INTEGER},
-    ProductId:{type:Sequelize.INTEGER},
     Quantity:{type:Sequelize.STRING}
   },
   {
