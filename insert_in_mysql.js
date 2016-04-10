@@ -7,7 +7,7 @@ var conn=mysql.createConnection({
   host:'localhost',
   user:'root',
   password:'priya',
-  database:'shoppingCart'
+  database:'ShoppingCart'
 });
 
 var queryString= "select UserID from Users where UserID=1028";
@@ -151,7 +151,3 @@ function insertLineItem(lastproduct,lastorder,callback){
   callback(null,1);
 
 }
-
-
-
-
