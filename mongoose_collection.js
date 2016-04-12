@@ -3,7 +3,7 @@
  */
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/shopping');
+mongoose.connect('mongodb://127.0.0.1:27017/shoppingCart');
 var connection = mongoose.connection;
 
 connection.on('error', function () {
@@ -42,7 +42,8 @@ OrderID:{type:Number},
       quantity:{type:Number}
     }
   ],
-  UserID:{type:Number}
+  UserID:{type:Number},
+  OrderDate:{type:Date}
 })
 var orderItem=mongoose.model('Order',Order);
 
