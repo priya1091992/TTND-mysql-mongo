@@ -107,14 +107,21 @@ function parallelFunction(callback){
 
 function insertOrderItem(lastuser, lastproduct, callback){
   //insert data for OrderItem database
-  sql="insert into OrderItems(OrderId,UserID) values ?";
+  function randomDate(start, end) {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  }
+
+
+  sql="insert into OrderItems(OrderId,UserID,OrderDate) values ?";
   values=[];
   for(i=0;i<1000;i++){
     var a=[];
     var user;
     user=Math.floor((Math.random() * lastuser) + 1);
+    var date= randomDate(new Date(2012, 0, 1), new Date());
     a[0]=(1+i);
     a[1]=user;
+    a[2]=date;
     values.push(a);
     LastOrder=a[0];
   }
