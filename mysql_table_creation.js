@@ -26,7 +26,7 @@ sequelize.sync().then(function(success) {
   //  username: 'janedoe',
   //  birthday: new Date(1980, 6, 20)
   //});
-  console.log(success);
+  console.log("Table successfully created");
 }).catch(function(err){
   console.log(err);
 });
@@ -48,14 +48,15 @@ sequelize.sync().then(function(success) {
 });
 
 var ordernew=sequelize.define('OrderItem',{
-    OrderId:{type:Sequelize.INTEGER, primaryKey:true}
+    OrderId:{type:Sequelize.INTEGER, primaryKey:true},
+    OrderDate:{type:Sequelize.DATE}
   },
   {
-    timestamps: false
-  }
+  timestamps: false
+}
 )
 
-usernew.hasMany(ordernew,{as:'order', foreignKey: 'UserID'});
+usernew.hasMany(ordernew,{foreignKey: 'UserID'});
 
 sequelize.sync().then(function(success) {
   console.log("Table successfully created");
@@ -70,8 +71,8 @@ var linenew=sequelize.define('LineItem',{
     timestamps: false
   }
 )
-ordernew.hasMany(linenew,{as:'order', foreignKey: 'OrderID'});
-productnew.hasMany(linenew,{as:'product', foreignKey: 'ProductId'});
+ordernew.hasMany(linenew,{foreignKey: 'OrderID'});
+productnew.hasMany(linenew,{foreignKey: 'ProductId'});
 
 sequelize.sync().then(function(success) {
   console.log("Table successfully created");
