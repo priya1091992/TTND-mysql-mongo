@@ -46,7 +46,7 @@ function parallelFunction(callback){
             ret = JSON.parse(JSON.stringify(results));
 
             var length = results.length;
-            for (i = 0; i < 2; i++) {
+            for (i = 0; i < length; i++) {
               var obj = {};
               a = ret[i];
               obj = {
@@ -59,15 +59,15 @@ function parallelFunction(callback){
               userArray.push(obj);
             }
           }
-          for (i = 0; i < 2; i++) {
-            console.log("Obj", userArray[i]);
+          console.log("Total Users:",userArray.length)
+          for (i = 0; i < userArray.length; i++) {
             var user = new userModel(userArray[i]);
             user.save(function (err) {
               if (err) {
                 console.log(err);
               }
               else {
-                console.log("Post saved");
+                //console.log("Post saved");
               }
             });
           }
@@ -87,7 +87,7 @@ function parallelFunction(callback){
           if (results.length) {
             ret = JSON.parse(JSON.stringify(results));
             var length = results.length;
-            for (i = 0; i < 2; i++) {
+            for (i = 0; i < length; i++) {
               var obj = {};
               a = ret[i];
               obj = {
@@ -98,15 +98,15 @@ function parallelFunction(callback){
               userArray.push(obj);
             }
           }
-          for (i = 0; i < 2; i++) {
-            console.log("Obj", userArray[i]);
+          console.log("Total Products:",userArray.length)
+          for (i = 0; i < userArray.length; i++) {
             var product1 = new product(userArray[i]);
             product1.save(function (err) {
               if (err) {
                 console.log(err);
               }
               else {
-                console.log("Post saved");
+               // console.log("Post saved");
               }
             });
           }
@@ -124,54 +124,66 @@ function parallelFunction(callback){
   });
   callback(null,1);
 }
-
+var c=1;
 
 function insertOrderItem(callback){
-var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID and OrderItems.OrderId=1000 order by OrderItems.OrderId'
-conn.query(que,function(err,results){
-  if(err){console.log(err);}
-  else {
-    userArray = [];
-    if (results.length) {
-      var ret = JSON.parse(JSON.stringify(results));
-      var length = results.length;
-      for (i=0; i<length; i=i+j) {
-        j=i;
-        a = ret[i];
-        while(j<length){
-          if(ret[j].OrderId==ret[i].OrderId){
-            obj1={};
-            a=ret[j];
-            obj1={
-              'Productid': a.ProductId,
-              'quantity': a.Quantity
+  console.log("in OredrItems...........................")
+  var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId'
+  conn.query(que,function(err,results){
+    if(err){console.log(err);}
+    else {
+      userArray = [];
+      if (results.length) {
+        var ret = JSON.parse(JSON.stringify(results));
+        var length = results.length;
+        for (i=0; i<length; i=i+c) {
+          c=1;
+          j=i;
+          a = ret[i];
+          arr=[];
+          while(j<length){
+            if(j>1000){
+              break;
+            };
+            if(ret[j].OrderId==ret[i].OrderId){
+              obj1={};
+              a=ret[j];
+              obj1={
+                'Productid': a.ProductId,
+                'quantity': a.Quantity
+              }
+              arr.push(obj1);
+              j++; c++;
             }
-            arr.push(obj1);
-            j++;
-          }}
-        var obj = {};
-        a=ret[i];
-        obj = {
-          'OrderID': a.OrderID,
-          'OrderDetails':arr,
-          'UserID': a.UserID
+            else{
+              break;
+            }
+          }
+          var obj = {};
+          a=ret[i];
+          obj = {
+            'OrderID': a.OrderID,
+            'OrderDetails':arr,
+            'UserID': a.UserID
+          }
+          userArray.push(obj);
         }
-        userArray.push(obj);
       }
-    }
-    for (i = 0; i < userArray.length; i++) {
-      var order = new orderItem(userArray[i]);
-      order.save(function (err) {
-        if (err) {
-          console.log(err);
-        }
-        else {
-          console.log("Post saved");
-        }
-      });
-    }
-  };
-})
+      console.log("Total Orders:",userArray.length)
+      for (i = 0; i <=userArray.length; i++) {
+        var order = new orderItem(userArray[i]);
+        order.save(function (err) {
+          if (err) {
+            console.log(err);
+          }
+          else {
+           // console.log("Post saved!!");
+          }
+        });
+      }
+    };
+  })
   callback(null,1);
 }
+
 
