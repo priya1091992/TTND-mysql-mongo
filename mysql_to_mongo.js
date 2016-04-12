@@ -12,6 +12,7 @@ var conn=mysql.createConnection({
   password:'priya',
   database:'ShoppingCart'
 });
+var mongoose = require('mongoose');
 
 var a;
 var userArray=[];
@@ -31,6 +32,7 @@ async.series([
     console.log("yepee finish!!!!!!!");
   }
   conn.end();
+  //mongoose.connection.close()
 });
 
 function parallelFunction(callback){
@@ -164,7 +166,8 @@ function insertOrderItem(callback){
           obj = {
             'OrderID': a.OrderID,
             'OrderDetails':arr,
-            'UserID': a.UserID
+            'UserID': a.UserID,
+            'OrderDate': a.OrderDate
           }
           userArray.push(obj);
         }
