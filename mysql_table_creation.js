@@ -71,8 +71,8 @@ var linenew=sequelize.define('LineItem',{
     timestamps: false
   }
 )
-ordernew.hasMany(linenew,{foreignKey: 'OrderID'});
-productnew.hasMany(linenew,{foreignKey: 'ProductId'});
+ordernew.hasMany(linenew,{foreignKey: 'OrderID'},{unique:'abc'});
+productnew.hasMany(linenew,{foreignKey: 'ProductId'},{unique:'abc'});
 
 sequelize.sync().then(function(success) {
   console.log("Table successfully created");
