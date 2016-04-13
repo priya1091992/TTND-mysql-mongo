@@ -108,7 +108,7 @@ function parallelFunction(callback){
                 console.log(err);
               }
               else {
-               // console.log("Post saved");
+                // console.log("Post saved");
               }
             });
           }
@@ -129,7 +129,7 @@ function parallelFunction(callback){
 var c=1;
 
 function insertOrderItem(callback){
-  console.log("in OredrItems...........................")
+  console.log("in OredrItems...........................");
   var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId'
   conn.query(que,function(err,results){
     if(err){console.log(err);}
@@ -180,7 +180,7 @@ function insertOrderItem(callback){
             console.log(err);
           }
           else {
-           // console.log("Post saved!!");
+            // console.log("Post saved!!");
           }
         });
       }
