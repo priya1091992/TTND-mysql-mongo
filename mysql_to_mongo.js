@@ -15,112 +15,112 @@ var conn=mysql.createConnection({
 var mongoose = require('mongoose');
 
 
-var limit=5;
-var count=0;
-for(i=0;i<10;i=i+limit){
-  limit=5;
-  parallelFunction();
-  count=count+limit;
-
-}
-function parallelFunction(callback){
-  var a;
-  var userArray=[];
-  var ret;
-  async.parallel([
-    function(callback1){
-      console.log('Task1: Executing Query');
-      var queryString = "select * from Users limit ?,?";
-      var values=[count,limit];
-      conn.query(queryString,values, function (error, results) {
-        console.log('Task1: Query Executed');
-        if (error) {
-          console.log('Task1: Query Failed');
-
-        }
-        else {
-          console.log('Task1: Query Success');
-          if (results.length) {
-            ret = JSON.parse(JSON.stringify(results));
-
-            var length = results.length;
-            for (i = 0; i < length; i++) {
-              var obj = {};
-              a = ret[i];
-              obj = {
-                'UserId': a.UserID,
-                'Name': a.UserName,
-                'Address': {'building': a.Address},
-                'PhoneNumber': a.Phone,
-                'email': [a.Email, a.AlternateEmail]
-              }
-              userArray.push(obj);
-            }
-          }
-          console.log("Total Users:",userArray.length)
-          var user = new userModel(userArray);
-          user.collection.insert(userArray, function(err,result){
-            if(err){
-              console.log("errrrrr",err);}
-            else{
-              console.log("Data inserted in user collection");}
-            callback1(err,result);
-          })
-        };
-      });
-
-    },
-    function(callback2){
-      var queryString = "select * from Products limit ?,?";
-      var values=[count,limit];
-      console.log('Task2:')
-      userArray=[];
-      conn.query(queryString,values, function (error, results) {
-        if (error) {
-          console.log(error);
-        }
-        else {
-          userArray=[];
-          if (results.length) {
-            ret = JSON.parse(JSON.stringify(results));
-            var length = results.length;
-            for (i = 0; i < length; i++) {
-              var obj = {};
-              a = ret[i];
-              obj = {
-                'ProductID': a.ProductID,
-                'Description': a.Description,
-                'Handling': a.Handling
-              }
-              userArray.push(obj);
-            }
-          }
-          console.log("Total Products:",userArray.length)
-          var product1 = new product(userArray);
-          product1.collection.insert(userArray,function (err,result) {
-            if (err) {
-              console.log(err);
-            }
-            else {
-              console.log("Data saved in Product collection");
-              callback2(err,result);
-            }
-          });
-        };
-      });
-
-    }
-  ],function(err,result){
-    if(err){
-      console.log(err);
-    }
-    else{
-      console.log("33333333")
-
-    }
-  });
-
-}
+//var limit=5;
+//var count=0;
+//for(i=0;i<10;i=i+limit){
+//  limit=5;
+//  parallelFunction();
+//  count=count+limit;
+//
+//}
+//function parallelFunction(callback){
+//  var a;
+//  var userArray=[];
+//  var ret;
+//  async.parallel([
+//    function(callback1){
+//      console.log('Task1: Executing Query');
+//      var queryString = "select * from Users limit ?,?";
+//      var values=[count,limit];
+//      conn.query(queryString,values, function (error, results) {
+//        console.log('Task1: Query Executed');
+//        if (error) {
+//          console.log('Task1: Query Failed');
+//
+//        }
+//        else {
+//          console.log('Task1: Query Success');
+//          if (results.length) {
+//            ret = JSON.parse(JSON.stringify(results));
+//
+//            var length = results.length;
+//            for (i = 0; i < length; i++) {
+//              var obj = {};
+//              a = ret[i];
+//              obj = {
+//                'UserId': a.UserID,
+//                'Name': a.UserName,
+//                'Address': {'building': a.Address},
+//                'PhoneNumber': a.Phone,
+//                'email': [a.Email, a.AlternateEmail]
+//              }
+//              userArray.push(obj);
+//            }
+//          }
+//          console.log("Total Users:",userArray.length)
+//          var user = new userModel(userArray);
+//          user.collection.insert(userArray, function(err,result){
+//            if(err){
+//              console.log("errrrrr",err);}
+//            else{
+//              console.log("Data inserted in user collection");}
+//            callback1(err,result);
+//          })
+//        };
+//      });
+//
+//    },
+//    function(callback2){
+//      var queryString = "select * from Products limit ?,?";
+//      var values=[count,limit];
+//      console.log('Task2:')
+//      userArray=[];
+//      conn.query(queryString,values, function (error, results) {
+//        if (error) {
+//          console.log(error);
+//        }
+//        else {
+//          userArray=[];
+//          if (results.length) {
+//            ret = JSON.parse(JSON.stringify(results));
+//            var length = results.length;
+//            for (i = 0; i < length; i++) {
+//              var obj = {};
+//              a = ret[i];
+//              obj = {
+//                'ProductID': a.ProductID,
+//                'Description': a.Description,
+//                'Handling': a.Handling
+//              }
+//              userArray.push(obj);
+//            }
+//          }
+//          console.log("Total Products:",userArray.length)
+//          var product1 = new product(userArray);
+//          product1.collection.insert(userArray,function (err,result) {
+//            if (err) {
+//              console.log(err);
+//            }
+//            else {
+//              console.log("Data saved in Product collection");
+//              callback2(err,result);
+//            }
+//          });
+//        };
+//      });
+//
+//    }
+//  ],function(err,result){
+//    if(err){
+//      console.log(err);
+//    }
+//    else{
+//      console.log("33333333")
+//
+//    }
+//  });
+//
+//}
 
 
 
@@ -130,8 +130,39 @@ function insertOrderItem(){
   var a, ret, obj1,j=1;
   var userArray=[];
   var arr=[];
-
+  var limit=[], sum=[], count=[];
+  var k= 0,s;
+  sum[0]=0;
+  count[0]=0;
   console.log("in OrderItems...........................");
+// for maintaining the limit nd offset to retreive data from mysql and migrate it into mongo.....
+  var maintainCount='select o.OrderId, o.UserID, l.ProductId, count(*) as c from OrderItems o join LineItems l on o.OrderId=l.OrderID group by o.OrderId';
+  conn.query(maintainCount,function(err,result){
+    if(err){ console.log("Error occur in order::");
+    }
+    else{
+      var ret = JSON.parse(JSON.stringify(result));
+      for(i=0;i<ret.length;){
+        s=sum[k];
+        s=sum[k]+ret[i].c;
+        if(s<=5){
+          sum[k]=ret[i].c+sum[k];
+          i++;
+        }
+        else{
+          k++;
+          sum[k]=0;
+        }
+      }
+    }
+    for(i=0;i<sum.length;i++){
+      limit[i]=sum[i];
+      count[i+1]=sum[i]+1;
+    }
+    console.log("Value of count:", count, "Value of limit:", limit);
+  })
+
+// for migrating data from mysql to mongo.......
   var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId';
   conn.query(que,function(err,results){
     if(err){console.log(err);}
