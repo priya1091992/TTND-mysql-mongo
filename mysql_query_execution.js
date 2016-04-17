@@ -20,8 +20,8 @@ con.query(queryString,function(err,rows){
   console.log(rows.length);
 });
 
-//Query:2->Get List of users who have ordered product 952 with quantity 3
-queryString='select * from Users u join OrderItems o on u.UserID=o.UserID join LineItems l on o.OrderId=l.OrderID where l.ProductID=952 and l.Quantity=3;'; //Problem when quantity=2 in mongoose
+//Query:2->Get List of users who have ordered product 600 with quantity 3
+queryString='select * from Users u join OrderItems o on u.UserID=o.UserID join LineItems l on o.OrderId=l.OrderID where l.ProductID=600 and l.Quantity=3;'; //Problem when quantity=2 in mongoose
 con.query(queryString,function(err,rows){
   if(err) throw err;
 
@@ -38,8 +38,8 @@ con.query(queryString,function(err,rows){
   console.log(rows);
 });
 
-//Query:4->Get list of Products which have been ordered by User 23 and sort them by order date.
-queryString='select p.ProductID, p.Description, o.OrderDate, o.UserId from Products p join LineItems l on p.ProductID=l.ProductId join OrderItems o on o.OrderId=l.OrderID and o.UserID=23 order by o.OrderDate;';
+//Query:4->Get list of Products which have been ordered by User 8 and sort them by order date.
+queryString='select p.ProductID, p.Description, o.OrderDate, o.UserId from Products p join LineItems l on p.ProductID=l.ProductId join OrderItems o on o.OrderId=l.OrderID and o.UserID=8 order by o.OrderDate;';
 con.query(queryString,function(err,rows){
   if(err) throw err;
 
@@ -47,8 +47,8 @@ con.query(queryString,function(err,rows){
   console.log(rows);
 });
 
-//Query:5->Get list of Products which have been ordered by User 23 and quantity 4
-queryString='select p.ProductID, p.Description, o.OrderDate, o.UserId from Products p join LineItems l on p.ProductID=l.ProductId join OrderItems o on o.OrderId=l.OrderID and o.UserID=23 and l.Quantity=4;';
+//Query:5->Get list of Products which have been ordered by User 8 and quantity 4
+queryString='select p.ProductID, p.Description, o.OrderDate, o.UserId from Products p join LineItems l on p.ProductID=l.ProductId join OrderItems o on o.OrderId=l.OrderID and o.UserID=8 and l.Quantity=4;';
 con.query(queryString,function(err,rows){
   if(err) throw err;
 
