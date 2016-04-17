@@ -61,7 +61,9 @@ function parallelFunction(callback){
           var user = new userModel(userArray);
           user.collection.insert(userArray, function(err,result){
             if(err){
-              console.log("errrrrr",err);}
+              console.log("error",err);
+            callback1(err,result);
+            }
             else{
               console.log("Data inserted in user collection");}
             callback1(err,result);
@@ -73,7 +75,6 @@ function parallelFunction(callback){
     function(callback2){
       var queryString = "select * from Products limit ?,?";
       var values=[count,limit];
-      console.log('Task2:')
       userArray=[];
       conn.query(queryString,values, function (error, results) {
         if (error) {
@@ -100,6 +101,7 @@ function parallelFunction(callback){
           product1.collection.insert(userArray,function (err,result) {
             if (err) {
               console.log(err);
+              callback2(err,result);
             }
             else {
               console.log("Data saved in Product collection");
@@ -115,7 +117,7 @@ function parallelFunction(callback){
       console.log(err);
     }
     else{
-      console.log("33333333")
+      console.log("Task completed")
 
     }
   });
@@ -133,7 +135,7 @@ function insertOrderItem(){
   var k= 0,s;
   sum[0]=0;
   co[0]=0;
-  console.log("in OrderItems...........................");
+  console.log("in OrderItems");
 
   async.waterfall([
     function(callback){
@@ -141,6 +143,7 @@ function insertOrderItem(){
       var maintainCount='select o.OrderId, o.UserID, l.ProductId, count(*) as c from OrderItems o join LineItems l on o.OrderId=l.OrderID group by o.OrderId';
       conn.query(maintainCount,function(err,result){
         if(err){ console.log("Error occur in order::");
+          callback(err,result);
         }
         else{
           var ret = JSON.parse(JSON.stringify(result));
@@ -231,7 +234,6 @@ function insertOrderItem(){
               }
               else {
                 console.log("Data saved in Order collection");
-
               }
             });
           };
@@ -240,7 +242,12 @@ function insertOrderItem(){
       callback(null,1);
     }
   ], function(error, result){
-
+  if(error){
+    console.log("Error", error);
+  }
+    else{
+    console.log("Task completed");
+  }
   })
 
 }
