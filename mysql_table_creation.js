@@ -52,8 +52,8 @@ var ordernew=sequelize.define('OrderItem',{
     OrderDate:{type:Sequelize.DATE}
   },
   {
-  timestamps: false
-}
+    timestamps: false
+  }
 )
 
 usernew.hasMany(ordernew,{foreignKey: 'UserID'});
@@ -79,8 +79,3 @@ sequelize.sync().then(function(success) {
 }).catch(function(err){
   console.log(err);
 });
-
-
-
-
-

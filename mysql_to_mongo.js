@@ -15,10 +15,10 @@ var conn=mysql.createConnection({
 var mongoose = require('mongoose');
 
 
-var limit=5;
+var limit=500;
 var count=0;
-for(i=0;i<10;i=i+limit){
-  limit=5;
+for(i=0;i<1000;i=i+limit){
+  limit=500;
   parallelFunction();
   count=count+limit;
 
@@ -122,7 +122,6 @@ function parallelFunction(callback){
 
 }
 
-// make it in waterfall............. so that the value of (sum, co, l) in the next function........
 
 var c,flag=1;
 var l=[], co=[];
@@ -135,96 +134,115 @@ function insertOrderItem(){
   sum[0]=0;
   co[0]=0;
   console.log("in OrderItems...........................");
+
+  async.waterfall([
+    function(callback){
 // for maintaining the limit nd offset to retreive data from mysql and migrate it into mongo.....
-  var maintainCount='select o.OrderId, o.UserID, l.ProductId, count(*) as c from OrderItems o join LineItems l on o.OrderId=l.OrderID group by o.OrderId';
-  conn.query(maintainCount,function(err,result){
-    if(err){ console.log("Error occur in order::");
-    }
-    else{
-      var ret = JSON.parse(JSON.stringify(result));
-      for(i=0;i<ret.length;){
-        s=sum[k];
-        s=sum[k]+ret[i].c;
-        if(s<=5){
-          sum[k]=ret[i].c+sum[k];
-          i++;
+      var maintainCount='select o.OrderId, o.UserID, l.ProductId, count(*) as c from OrderItems o join LineItems l on o.OrderId=l.OrderID group by o.OrderId';
+      conn.query(maintainCount,function(err,result){
+        if(err){ console.log("Error occur in order::");
         }
         else{
-          k++;
-          sum[k]=0;
+          var ret = JSON.parse(JSON.stringify(result));
+          for(i=0;i<ret.length;){
+            s=sum[k];
+            s=sum[k]+ret[i].c;
+            if(s<=100){
+              sum[k]=ret[i].c+sum[k];
+              i++;
+            }
+            else{
+              k++;
+              sum[k]=0;
+            }
+          }
+          for(i=0;i<sum.length;i++){
+            l[i]=sum[i];
+            co[i+1]=sum[i];
+          }
+          console.log("Value of count:", co, "Value of limit:", l, "Value of sum::", sum);
+          callback(err,co,l,sum);
         }
+
+      })
+    },
+    function(co,l,sum,callback){
+// for migrating data from mysql to mongo.......
+      var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId limit ?,?';
+      console.log("INNNNNNNNNNNNNN second function::::::::", co,l,sum.length);
+
+      for(i=0;i<sum.length;i++){
+        co[i+1]=co[i]+l[i];
       }
+
+      for(i=0;i<sum.length;i++){
+        var values=[co[i],l[i]];
+        console.log(values);
+        conn.query(que,values,function(err,results){
+          if(err){console.log(err);}
+          else {
+            userArray = [];
+            if (results.length) {
+              var ret = JSON.parse(JSON.stringify(results));
+              var length = results.length;
+              for (i=0; i<length; i=(i+c-1)) {
+                c=1;
+                j=i;
+                a = ret[i];
+                arr=[];
+                while((j<length) && (flag=1)){
+                  if(j>100){
+                    break;
+                  };
+                  if(ret[j].OrderId==ret[i].OrderId){
+                    flag=1;
+                    obj1={};
+                    a=ret[j];
+                    obj1={
+                      'Productid': a.ProductId,
+                      'quantity': a.Quantity
+                    }
+                    arr.push(obj1);
+                    j++;
+                    c++;
+                  }
+                  else{
+                    flag=0;
+                    break;
+                  }
+                }
+                var obj = {};
+                a=ret[i];
+                obj = {
+                  'OrderID': a.OrderID,
+                  'OrderDetails':arr,
+                  'UserID': a.UserID,
+                  'OrderDate': a.OrderDate
+                }
+                userArray.push(obj);
+              }
+            }
+            console.log("Total Orders:",userArray.length)
+            var order = new orderItem(userArray);
+            order.collection.insert(userArray,function (err,result) {
+              if (err) {
+                console.log(err);
+                callback(err,result);
+              }
+              else {
+                console.log("Data saved in Order collection");
+
+              }
+            });
+          };
+        })
+      }
+      callback(null,1);
     }
-    for(i=0;i<sum.length;i++){
-      l[i]=sum[i];
-      co[i+1]=sum[i]+1;
-    }
-    console.log("Value of count:", co, "Value of limit:", l, "Value of sum::", sum);
+  ], function(error, result){
+
   })
 
-// for migrating data from mysql to mongo.......
-  var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId limit ?,?';
-
-  for(i=0;i<sum.length;i++){
-    var values=[co[i],l[i]];
-    conn.query(que,values,function(err,results){
-      if(err){console.log(err);}
-      else {
-        userArray = [];
-        if (results.length) {
-          var ret = JSON.parse(JSON.stringify(results));
-          var length = results.length;
-          for (i=0; i<length; i=(i+c-1)) {
-            c=1;
-            j=i;
-            a = ret[i];
-            arr=[];
-            while((j<length) && (flag=1)){
-              if(j>100){
-                break;
-              };
-              if(ret[j].OrderId==ret[i].OrderId){
-                flag=1;
-                obj1={};
-                a=ret[j];
-                obj1={
-                  'Productid': a.ProductId,
-                  'quantity': a.Quantity
-                }
-                arr.push(obj1);
-                j++;
-                c++;
-              }
-              else{
-                flag=0;
-                break;
-              }
-            }
-            var obj = {};
-            a=ret[i];
-            obj = {
-              'OrderID': a.OrderID,
-              'OrderDetails':arr,
-              'UserID': a.UserID,
-              'OrderDate': a.OrderDate
-            }
-            userArray.push(obj);
-          }
-        }
-        console.log("Total Orders:",userArray.length)
-        var order = new orderItem(userArray);
-        order.collection.insert(userArray,function (err,result) {
-          if (err) {
-            console.log(err);
-          }
-          else {
-            console.log("Data saved in Order collection");
-
-          }
-        });
-      };
-    })
-  }
 }
 
 insertOrderItem();

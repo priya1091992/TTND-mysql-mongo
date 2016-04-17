@@ -13,7 +13,7 @@ var conn=mysql.createConnection({
 var queryString= "select UserID from Users where UserID=1028";
 conn.query(queryString, function(error,results){
   if(error){
-    throw error;
+    console.log(error);
   }
   else{
     //var ret = JSON.parse(JSON.stringify(results));
@@ -60,15 +60,17 @@ function parallelFunction(callback){
         }
 
         conn.query(sql,[values], function(err,result){
-          if(err) throw err;
+          if(err){console.log(err);}
           else
           {
-            //LastValue=result.insertId
             console.log("LastUser:",LastValue)
+            callback1(err,result);
+            //LastValue=result.insertId
+
           }
         })
 
-        callback1(null,1);
+
       },
       function(callback1){
         //insert data for Product database
@@ -85,13 +87,14 @@ function parallelFunction(callback){
 
         conn.query(sql,[values], function(err,result){
           if(err) {
-            throw err;
+            console.log(err);
           }
           else {
             console.log("LastProduct:",LastProduct);
+            callback1(err,result);
           }
         })
-        callback1(null,1);
+
       }],
     function(err,results) {
       if(err){
@@ -99,9 +102,10 @@ function parallelFunction(callback){
       }
       else{
         console.log("Completed");
+        callback(err,LastValue,LastProduct);
       }
     });
-  callback(null,LastValue,LastProduct);
+
 };
 
 
@@ -126,14 +130,15 @@ function insertOrderItem(lastuser, lastproduct, callback){
     LastOrder=a[0];
   }
 
-  conn.query(sql,[values], function(err,result){
-    if(err) throw err;
+  conn.query(sql,[values], function(err,result) {
+    if(err){console.log(err);}
     else{
       //LastOrder=result.insertId;
       console.log("LastOrder;",LastOrder);
+      callback(err,lastproduct,LastOrder);
     }
   })
-  callback(null,lastproduct,LastOrder);
+
 }
 
 
@@ -152,9 +157,12 @@ function insertLineItem(lastproduct,lastorder,callback){
     a[2]=Math.floor((Math.random() * 10) + 1);;
     values.push(a);
   }
-  conn.query(sql,[values], function(err){
-    if(err) throw err;
+  conn.query(sql,[values], function(err,result){
+    if(err){console.log(err);}
+  else{
+      callback(err,result);
+    }
   })
-  callback(null,1);
+
 
 }
