@@ -172,8 +172,6 @@ function insertOrderItem(){
     function(co,l,sum,callback){
 // for migrating data from mysql to mongo.......
       var que='select * from OrderItems, LineItems where OrderItems.OrderId=LineItems.OrderID order by OrderItems.OrderId limit ?,?';
-      console.log("INNNNNNNNNNNNNN second function::::::::", co,l,sum.length);
-
       for(i=0;i<sum.length;i++){
         co[i+1]=co[i]+l[i];
       }
