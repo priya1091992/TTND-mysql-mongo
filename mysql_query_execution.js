@@ -6,7 +6,7 @@ var con=mysql.createConnection({
   host:'localhost',
   user:'root',
   password:'priya',
-  database:'ShoppingCart'
+  database:'ShoppingCartExperiment'
 });
 
 var queryString;

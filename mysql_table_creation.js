@@ -2,19 +2,19 @@
  * Created by priya on 9/4/16.
  */
 var Sequelize=require('sequelize');
-var sequelize=new Sequelize('ShoppingCart', 'root', 'priya',{
+var sequelize=new Sequelize('ShoppingCartExperiment', 'root', 'priya',{
   define: {
     timestamps: false
   }
 });
 
 var usernew=sequelize.define('User',{
-    UserID:{type:Sequelize.INTEGER, primaryKey:true},
-    UserName:{type:Sequelize.STRING},
-    Address:{type:Sequelize.STRING},
-    Phone:{type:Sequelize.INTEGER},
-    Email:{type:Sequelize.STRING},
-    AlternateEmail:{type:Sequelize.STRING}
+    userId:{type:Sequelize.INTEGER, primaryKey:true},
+    userName:{type:Sequelize.STRING},
+    address:{type:Sequelize.STRING},
+    phone:{type:Sequelize.INTEGER},
+    email:{type:Sequelize.STRING},
+    alternateEmail:{type:Sequelize.STRING}
   },
   {
     timestamps: false
@@ -32,9 +32,9 @@ sequelize.sync().then(function(success) {
 });
 
 var productnew=sequelize.define('Product',{
-    ProductID:{type:Sequelize.INTEGER, primaryKey:true},
-    Description:{type:Sequelize.STRING},
-    Handling:{type:Sequelize.STRING}
+    productId:{type:Sequelize.INTEGER, primaryKey:true},
+    description:{type:Sequelize.STRING},
+    handling:{type:Sequelize.STRING}
   },
   {
     timestamps: false
@@ -48,15 +48,15 @@ sequelize.sync().then(function(success) {
 });
 
 var ordernew=sequelize.define('OrderItem',{
-    OrderId:{type:Sequelize.INTEGER, primaryKey:true},
-    OrderDate:{type:Sequelize.DATE}
+    orderId:{type:Sequelize.INTEGER, primaryKey:true},
+    orderDate:{type:Sequelize.DATE}
   },
   {
     timestamps: false
   }
 )
 
-usernew.hasMany(ordernew,{foreignKey: 'UserID'});
+usernew.hasMany(ordernew,{foreignKey: 'userId'});
 
 sequelize.sync().then(function(success) {
   console.log("Table successfully created");
@@ -65,14 +65,14 @@ sequelize.sync().then(function(success) {
 });
 
 var linenew=sequelize.define('LineItem',{
-    Quantity:{type:Sequelize.STRING}
+    quantity:{type:Sequelize.INTEGER}
   },
   {
     timestamps: false
   }
 )
-ordernew.hasMany(linenew,{foreignKey: 'OrderID'},{unique:'abc'});
-productnew.hasMany(linenew,{foreignKey: 'ProductId'},{unique:'abc'});
+ordernew.hasMany(linenew,{foreignKey: 'orderId'},{unique:'abc'});
+productnew.hasMany(linenew,{foreignKey: 'productId'},{unique:'abc'});
 
 sequelize.sync().then(function(success) {
   console.log("Table successfully created");
