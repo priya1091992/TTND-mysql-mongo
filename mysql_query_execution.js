@@ -6,7 +6,7 @@ var con=mysql.createConnection({
   host:'localhost',
   user:'root',
   password:'priya',
-  database:'ShoppingCartExperiment'
+  database:'ShoppingCart'
 });
 
 var queryString;
@@ -20,8 +20,8 @@ con.query(queryString,function(err,rows){
   console.log(rows.length);
 });
 
-//Query:2->Get List of users who have ordered product 600 with quantity 3
-queryString='select * from Users u join OrderItems o on u.UserID=o.UserID join LineItems l on o.OrderId=l.OrderID where l.ProductID=600 and l.Quantity=3;'; //Problem when quantity=2 in mongoose
+//Query:2->Get List of users who have ordered product 160 with quantity 6
+queryString='select * from Users u join OrderItems o on u.UserID=o.UserID join LineItems l on o.OrderId=l.OrderID where l.ProductID=160 and l.Quantity=6;';
 con.query(queryString,function(err,rows){
   if(err) throw err;
 

@@ -7,7 +7,7 @@ var conn=mysql.createConnection({
   host:'localhost',
   user:'root',
   password:'priya',
-  database:'ShoppingCartExperiment'
+  database:'ShoppingCart'
 });
 var queryString= "select userId from Users where userId=1028";
 conn.query(queryString, function(error,results){
@@ -46,7 +46,7 @@ function parallelFunction(callback){
       function(callback1){
         //insert values for User database
         sql="insert into Users(userId,userName,address,phone,email,alternateEmail) values ?";
-        for(i=0;i<10;i++){
+        for(i=0;i<1000;i++){
           var a=[];
           a[0]=(1+i);
           a[1]="alpha"+i;
@@ -75,7 +75,7 @@ function parallelFunction(callback){
         //insert data for Product database
         sql="insert into Products(productId,description,handling) values ?";
         values=[];
-        for(i=0;i<10;i++){
+        for(i=0;i<1000;i++){
           var a=[];
           a[0]=(1+i);
           a[1]="Product"+i;
@@ -117,7 +117,7 @@ function insertOrderItem(lastuser, lastproduct, callback){
 
   sql="insert into OrderItems(orderId,userId,OrderDate) values ?";
   values=[];
-  for(i=0;i<10;i++){
+  for(i=0;i<1000;i++){
     var a=[];
     var user;
     user=Math.floor((Math.random() * lastuser) + 1);
@@ -145,7 +145,7 @@ function insertLineItem(lastproduct,lastorder,callback){
 //Insert data for LineItem database
   sql="insert into LineItems(orderId,productId,quantity) values ?";
   values=[];
-  for(i=0;i<10;i++){
+  for(i=0;i<1000;i++){
     var a=[];
     var lastordr;
     var lastProduct;

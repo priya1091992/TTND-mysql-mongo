@@ -2,7 +2,7 @@
  * Created by priya on 9/4/16.
  */
 var Sequelize=require('sequelize');
-var sequelize=new Sequelize('ShoppingCartExperiment', 'root', 'priya',{
+var sequelize=new Sequelize('ShoppingCart', 'root', 'priya',{
   define: {
     timestamps: false
   }

@@ -43,8 +43,8 @@ orderItem.find({},{_id:0},{limit:1000, sort:{UserID:1}},function(err,result){
 
 });
 
-//Query:2->Get List of users who have ordered product 600 with quantity 3
-orderItem.aggregate([{$unwind:"$OrderDetails"},{$match:{$and:[{'OrderDetails.Productid':600},{'OrderDetails.quantity':'3'}]}}], function(err,result){
+//Query:2->Get List of users who have ordered product 160 with quantity 6
+orderItem.aggregate([{$unwind:"$orderDetails"},{$match:{$and:[{'orderDetails.productId':160},{'orderDetails.quantity':6}]}}], function(err,result){
   if(err){
     console.log("Query 3 error:",err);
   }
@@ -60,7 +60,7 @@ orderItem.aggregate([{$unwind:"$OrderDetails"},{$match:{$and:[{'OrderDetails.Pro
 
 
 //Query:4->Get list of Products which have been ordered by User 8 and sort them by order date.
-orderItem.find({UserID:8},{'OrderDetails.Productid':1,_id:0},{sort:{OrderDate:1}},function(err, order){
+orderItem.find({userId:8},{'orderDetails.productId':1,_id:0},{sort:{orderDate:1}},function(err, order){
  if(err){
    console.log("Query 4 error",err);
  }
@@ -70,7 +70,7 @@ orderItem.find({UserID:8},{'OrderDetails.Productid':1,_id:0},{sort:{OrderDate:1}
 })
 
 //Query:5->Get list of Products which have been ordered by User 8 and quantity 4
-orderItem.aggregate([{$unwind:"$OrderDetails"},{$match:{$and:[{UserID:8},{'OrderDetails.quantity':'4'}]}}], function(err,order){
+orderItem.aggregate([{$unwind:"$orderDetails"},{$match:{$and:[{userId:8},{'orderDetails.quantity':4}]}}], function(err,order){
   if(err){
     console.log("Query 5 :",err);
   }

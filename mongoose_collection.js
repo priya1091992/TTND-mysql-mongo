@@ -3,7 +3,7 @@
  */
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/shoppingCartExperiment');
+mongoose.connect('mongodb://127.0.0.1:27017/shoppingCart');
 var connection = mongoose.connection;
 
 connection.on('error', function () {
